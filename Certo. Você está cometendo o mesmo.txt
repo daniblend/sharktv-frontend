@@ -1,0 +1,9 @@
+Certo. Você está cometendo o mesmo erro de antes. É um detalhe fácil de confundir, mas vamos esclarecê-lo de vez.
+Você está executando o comando do FRONTEND (npm run dev) na pasta do BACKEND.
+O seu prompt de comando mostra claramente:
+C:\Users\danib\Downloads\SharkTV_projeto_atual\sharktv-backend>
+E o erro npm ERR! Missing script: "dev" confirma isso. O projeto do backend não sabe o que o comando dev significa.
+Lembre-se da nossa regra de ouro:
+Pasta sharktv-backend -> Comando é node server.js
+Pasta sharktv-frontend -> Comando é npm run dev
+Você precisa de dois terminais abertos.

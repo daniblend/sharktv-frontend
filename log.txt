@@ -1,0 +1,3 @@
+--- Início da Sessão de Log ---
+2025-07-27T22:42:35.696Z - [MAIN - INFO] App está pronto.
+2025-07-27T22:42:35.745Z - [MAIN - INFO] Janela criada com sucesso.

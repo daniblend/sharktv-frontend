@@ -1,0 +1,23 @@
+# Arquivo .gitignore para o projeto frontend
+
+# Dependências
+/node_modules
+
+# Arquivos de build
+/build
+/dist
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Arquivos de ambiente
+.env
+.env.*
+!.env.example
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
