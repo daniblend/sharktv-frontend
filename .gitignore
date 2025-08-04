@@ -1,23 +1,38 @@
-# Arquivo .gitignore para o projeto frontend
-
-# Dependências
-/node_modules
-
-# Arquivos de build
-/build
-/dist
-
 # Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-# Arquivos de ambiente
-.env
-.env.*
-!.env.example
+node_modules
+dist
+dist-ssr
+*.local
 
-# Arquivos de sistema
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
 .DS_Store
-Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# CREDENCIAIS SENSÍVEIS - NUNCA COMMITAR!
+.env
+.env.local
+.env.example
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Outros arquivos sensíveis
+config/credentials.json
+*.pem
+*.key
+*.cert

@@ -1,9 +1,7 @@
-// --- ARQUIVO A SER ATUALIZADO: src/SeriesDetails.jsx ---
-
+// src/components/SeriesDetails.jsx - Caminhos corrigidos
 import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from './contexts/AuthContext';
-// A linha 'import { URL } from 'url';' FOI REMOVIDA
+import { useAuth } from '../contexts/AuthContext'; // Caminho correto
 
 const getProviderInfo = (m3uUrl) => {
     if (!m3uUrl) return null;
@@ -59,26 +57,39 @@ const SeriesDetails = ({ item, onClose, onPlayEpisode }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50 p-4" onClick={onClose}>
-            <div className="relative w-full h-full max-w-5xl max-h-[90vh] bg-sharkBg rounded-lg shadow-xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="relative w-full h-full max-w-5xl max-h-[90vh] bg-gray-900 rounded-lg shadow-xl overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
                 <div className="absolute inset-0 bg-cover bg-center opacity-20" style={backdropStyle} />
-                <div className="absolute inset-0 bg-black bg-opacity-70 md:bg-opacity-60 md:bg-gradient-to-r from-sharkBg via-sharkBg/80 to-transparent" />
-                <button onClick={onClose} className="absolute top-4 right-4 text-white text-3xl hover:text-sharkBlue transition-colors z-20">×</button>
+                <div className="absolute inset-0 bg-black bg-opacity-70 md:bg-opacity-60 md:bg-gradient-to-r from-gray-900 via-gray-900/80 to-transparent" />
+                <button onClick={onClose} className="absolute top-4 right-4 text-white text-3xl hover:text-cyan-400 transition-colors z-20">×</button>
+                
                 <div className="relative z-10 p-6 md:p-8 text-white flex-shrink-0">
                     <h1 className="text-3xl md:text-5xl font-bold mb-2">{info?.name || item.title}</h1>
                     <p className="text-gray-300 text-sm md:text-base max-h-24 overflow-y-auto">{info?.plot || 'Sinopse não disponível.'}</p>
                 </div>
+                
                 <div className="relative z-10 px-6 md:px-8 py-4 flex flex-col flex-grow overflow-hidden">
                     <div className="flex items-center gap-4 border-b border-white/10 pb-2 mb-2 flex-shrink-0">
-                        <h2 className="text-xl font-bold">Episódios</h2>
-                        <select value={selectedSeason} onChange={(e) => setSelectedSeason(e.target.value)} className="bg-sharkSurface text-white rounded px-2 py-1 border border-transparent focus:ring-2 focus:ring-sharkBlue outline-none" disabled={isLoading || seasons.length === 0}>
+                        <h2 className="text-xl font-bold text-white">Episódios</h2>
+                        <select 
+                            value={selectedSeason} 
+                            onChange={(e) => setSelectedSeason(e.target.value)} 
+                            className="bg-gray-800 text-white rounded px-2 py-1 border border-transparent focus:ring-2 focus:ring-cyan-400 outline-none" 
+                            disabled={isLoading || seasons.length === 0}
+                        >
                             {isLoading && <option>Carregando...</option>}
-                            {seasons.map(seasonNum => <option key={seasonNum} value={seasonNum}>Temporada {seasonNum}</option>)}
+                            {seasons.map(seasonNum => (
+                                <option key={seasonNum} value={seasonNum}>
+                                    Temporada {seasonNum}
+                                </option>
+                            ))}
                         </select>
                     </div>
+                    
                     <div className="flex-grow overflow-y-auto scrollbar-hide">
                         {isLoading && <p className="p-3 text-gray-400">Carregando episódios...</p>}
-                        {isError && <p className="p-3 text-sharkRed">Erro ao carregar episódios.</p>}
+                        {isError && <p className="p-3 text-red-400">Erro ao carregar episódios.</p>}
                         {!isLoading && episodes.length === 0 && <p className="p-3 text-gray-400">Nenhum episódio encontrado.</p>}
+                        
                         {episodes?.map(ep => (
                             <button
                                 key={ep.id}
@@ -88,8 +99,8 @@ const SeriesDetails = ({ item, onClose, onPlayEpisode }) => {
                                 })}
                                 className="w-full text-left p-3 hover:bg-white/10 rounded-md flex items-center gap-4 transition-colors"
                             >
-                                <span className="font-bold text-sharkBlue w-8">{ep.episode_num}</span>
-                                <span className="truncate flex-grow">{ep.title || `Episódio ${ep.episode_num}`}</span>
+                                <span className="font-bold text-cyan-400 w-8">{ep.episode_num}</span>
+                                <span className="truncate flex-grow text-white">{ep.title || `Episódio ${ep.episode_num}`}</span>
                                 <span className="text-xl text-white/50">▶</span>
                             </button>
                         ))}

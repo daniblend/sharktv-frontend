@@ -1,7 +1,7 @@
-// --- ARQUIVO ATUALIZADO: src/App.jsx ---
-
+// src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { FilterProvider } from './contexts/FilterContext';
 import PlayerPage from './pages/PlayerPage';
 import StandalonePlayer from './pages/StandalonePlayer';
 import DebugMonitor from './components/DebugMonitor';
@@ -11,7 +11,6 @@ function App() {
   const [isElectron, setIsElectron] = useState(false);
 
   useEffect(() => {
-    // Verifica se está rodando no Electron
     const checkElectron = () => {
       const isElectronEnv = window.electronAPI !== undefined;
       setIsElectron(isElectronEnv);
@@ -44,29 +43,27 @@ function App() {
 
   return (
     <div className="App">
-      <Router>
+      <FilterProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<PlayerPage />} />
           <Route path="/player" element={<StandalonePlayer />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
-      </Router>
 
-      {/* Debug Monitor - sempre disponível em desenvolvimento */}
-      {(import.meta.env.DEV || debugVisible) && (
+        {/* Debug Monitor */}
         <DebugMonitor 
           isVisible={debugVisible} 
           onToggle={() => setDebugVisible(!debugVisible)} 
         />
-      )}
 
-      {/* Aviso se não estiver no Electron */}
-      {!isElectron && (
-        <div className="fixed top-0 left-0 right-0 bg-red-600 text-white text-center py-2 z-40">
-          ⚠️ Aplicação deve ser executada via Electron para funcionar corretamente
-        </div>
-      )}
+        {/* Aviso se não estiver no Electron */}
+        {!isElectron && (
+          <div className="fixed top-0 left-0 right-0 bg-red-600 text-white text-center py-2 z-40">
+            ⚠️ Aplicação deve ser executada via Electron para funcionar corretamente
+          </div>
+        )}
+      </FilterProvider>
     </div>
   );
 }

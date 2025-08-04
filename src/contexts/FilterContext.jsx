@@ -1,21 +1,29 @@
-import React, { createContext, useState, useContext, useMemo } from 'react';
+// src/contexts/FilterContext.jsx - Contexto para filtros
+import React, { createContext, useContext, useState } from 'react';
 
-const FilterContext = createContext(null);
+const FilterContext = createContext();
 
 export const FilterProvider = ({ children }) => {
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [isFilterPanelVisible, setIsFilterPanelVisible] = useState(true); // Começa aberto
+    const [isFilterPanelVisible, setIsFilterPanelVisible] = useState(false);
 
     const toggleFilterPanel = () => {
         setIsFilterPanelVisible(prev => !prev);
     };
 
-    const value = useMemo(() => ({
+    const resetFilters = () => {
+        setSelectedCategory('all');
+        setIsFilterPanelVisible(false);
+    };
+
+    const value = {
         selectedCategory,
         setSelectedCategory,
         isFilterPanelVisible,
-        toggleFilterPanel
-    }), [selectedCategory, isFilterPanelVisible]);
+        setIsFilterPanelVisible,
+        toggleFilterPanel,
+        resetFilters
+    };
 
     return (
         <FilterContext.Provider value={value}>
