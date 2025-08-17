@@ -1,14 +1,16 @@
-// src/App.jsx
+// src/App.jsx - Roteamento simplificado
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { FilterProvider } from './contexts/FilterContext';
+import { useAuth } from './contexts/AuthContext';
 import PlayerPage from './pages/PlayerPage';
 import StandalonePlayer from './pages/StandalonePlayer';
+import ProfilesPage from './ProfilesPage';
 import DebugMonitor from './components/DebugMonitor';
 
 function App() {
   const [debugVisible, setDebugVisible] = useState(false);
   const [isElectron, setIsElectron] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const checkElectron = () => {
@@ -43,27 +45,36 @@ function App() {
 
   return (
     <div className="App">
-      <FilterProvider>
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/home" element={<PlayerPage />} />
-          <Route path="/player" element={<StandalonePlayer />} />
-          <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
-
-        {/* Debug Monitor */}
-        <DebugMonitor 
-          isVisible={debugVisible} 
-          onToggle={() => setDebugVisible(!debugVisible)} 
+      <Routes>
+        {/* Rota principal - mostra PlayerPage ou Login baseado na autenticação */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        <Route path="/home" element={<PlayerPage />} />
+        
+        {/* Player standalone */}
+        <Route path="/player" element={<StandalonePlayer />} />
+        
+        {/* Gerenciamento de perfis - só acessível se autenticado */}
+        <Route 
+          path="/profiles" 
+          element={isAuthenticated ? <ProfilesPage /> : <Navigate to="/home" replace />} 
         />
+        
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </Routes>
 
-        {/* Aviso se não estiver no Electron */}
-        {!isElectron && (
-          <div className="fixed top-0 left-0 right-0 bg-red-600 text-white text-center py-2 z-40">
-            ⚠️ Aplicação deve ser executada via Electron para funcionar corretamente
-          </div>
-        )}
-      </FilterProvider>
+      {/* Debug Monitor */}
+      <DebugMonitor 
+        isVisible={debugVisible} 
+        onToggle={() => setDebugVisible(!debugVisible)} 
+      />
+
+      {/* Aviso se não estiver no Electron */}
+      {!isElectron && (
+        <div className="fixed top-0 left-0 right-0 bg-red-600 text-white text-center py-2 z-40">
+          ⚠️ Aplicação deve ser executada via Electron para funcionar corretamente
+        </div>
+      )}
     </div>
   );
 }
