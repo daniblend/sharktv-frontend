@@ -1,6 +1,7 @@
-// src/pages/PlayerPage.jsx - Usando seus componentes originais
+// src/pages/PlayerPage.jsx - Integração com sistema baseado em perfis
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { useIPTVCache } from '../hooks/useIPTVCache';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -8,8 +9,10 @@ import ContentGrid from '../components/ContentGrid';
 import DetailsModal from '../components/DetailsModal';
 import LoadingScreen from '../components/LoadingScreen';
 import SeriesDetails from '../components/SeriesDetails';
+import Login from '../Login';
 
 const PlayerPage = () => {
+    const { user, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     
     // Estados do layout original
@@ -20,8 +23,13 @@ const PlayerPage = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     
-    // Hook de cache
-    const { data, loading, error, lastUpdated, loadAllData, clearCache, buildStreamUrl } = useIPTVCache();
+    // Hook de cache agora usa a URL M3U do usuário ativo
+    const { data, loading, error, lastUpdated, loadAllData, clearCache, buildStreamUrl } = useIPTVCache(user?.m3uUrl);
+
+    // Se não está autenticado, mostra tela de login
+    if (!isAuthenticated || !user) {
+        return <Login />;
+    }
 
     // Mapeia os dados para o formato esperado pelos componentes originais
     const getProcessedData = () => {
@@ -83,6 +91,13 @@ const PlayerPage = () => {
                     categories: data.channelCategories || [],
                     type: 'live'
                 };
+            case 'Minha Lista':
+                // Implementar favoritos se necessário
+                return {
+                    items: [], // TODO: Integrar com FavoritesContext
+                    categories: [],
+                    type: 'favorites'
+                };
             default:
                 return { items: [], categories: [], type: 'movie' };
         }
@@ -122,11 +137,6 @@ const PlayerPage = () => {
         setShowDetailsModal(true);
     };
 
-    const handleLogout = () => {
-        // Implementar logout se necessário
-        console.log('Logout clicked');
-    };
-
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);
     };
@@ -152,7 +162,7 @@ const PlayerPage = () => {
 
     // Loading state
     if (loading) {
-        return <LoadingScreen message="Carregando SharkTV..." />;
+        return <LoadingScreen message={`Carregando conteúdo para ${user.username}...`} />;
     }
 
     // Error state
@@ -162,7 +172,9 @@ const PlayerPage = () => {
                 <div className="text-center text-white max-w-md mx-auto p-6">
                     <div className="text-red-500 text-6xl mb-4">⚠️</div>
                     <h2 className="text-xl font-bold mb-4">Erro de Conexão</h2>
-                    <p className="text-gray-300 mb-6">{error}</p>
+                    <p className="text-gray-300 mb-2">Não foi possível carregar o conteúdo para:</p>
+                    <p className="text-blue-400 mb-6 font-bold">{user.username}</p>
+                    <p className="text-gray-400 text-sm mb-6">{error}</p>
                     <div className="flex gap-3 justify-center">
                         <button
                             onClick={() => loadAllData(true)}
@@ -188,7 +200,7 @@ const PlayerPage = () => {
     const processedData = getProcessedData();
 
     return (
-        <div className="min-h-screen" style={{ backgroundColor: 'var(--color-shark-bg, #1a1a1a)' }}>
+        <div className="min-h-screen bg-sharkBg">
             {/* Header Original */}
             <Header
                 onToggleSidebar={handleToggleSidebar}
@@ -199,7 +211,7 @@ const PlayerPage = () => {
                 onSearchChange={handleSearchChange}
                 isSearchVisible={isSearchVisible}
                 onToggleSearch={handleToggleSearch}
-                onLogout={handleLogout}
+                onLogout={() => navigate('/login')}
             />
 
             {/* Sidebar Original */}
@@ -251,12 +263,18 @@ const PlayerPage = () => {
                 )
             )}
 
-            {/* Status da aplicação (opcional) */}
-            {lastUpdated && (
-                <div className="fixed bottom-4 right-4 bg-black bg-opacity-50 text-white text-xs px-3 py-1 rounded-full">
-                    Cache: {lastUpdated.toLocaleTimeString()}
+            {/* Status da aplicação */}
+            <div className="fixed bottom-4 right-4 bg-black bg-opacity-50 text-white text-xs px-3 py-1 rounded-full">
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span>{user.username}</span>
+                    {lastUpdated && (
+                        <span className="ml-2 text-gray-400">
+                            | {lastUpdated.toLocaleTimeString()}
+                        </span>
+                    )}
                 </div>
-            )}
+            </div>
         </div>
     );
 };
